@@ -1,5 +1,4 @@
 """
-step1_tool_with_data.py
 =======================
 STEP 1: Build TOOL 1 -- a tool that has its information INSIDE it.
 

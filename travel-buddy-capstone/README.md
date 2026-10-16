@@ -1,5 +1,4 @@
-# Travel Buddy Capstone: Parts 2, 3 and 4 Added One Step at a Time
-
+# Travel Buddy Capstone
 You built Travel Buddy: an agent with two tools (facts stored in code, and a Wikipedia search).
 This repo keeps that agent and adds **one new idea per file**, in the same order as the course.
 
@@ -9,7 +8,7 @@ This repo keeps that agent and adds **one new idea per file**, in the same order
 2. **Every file runs by itself.** Run any step on its own, in any order.
 3. **The agent is always built the same way, right in the file:** load settings, create the `client`, create the `Agent` with instructions and tools, then ask a question. There are no hidden helper functions.
 4. **The two tools live in `tools.py`.** They are unchanged from the project, and each new file imports them so it can focus on the new idea. Steps 1 to 3 keep the tools inline, as you first wrote them.
-5. **Steps that need no AI model at all** (10 and 18) just print numbers, so you can show them anywhere.
+5. **Steps that need no AI model at all** (10 and 18) just print numbers
 
 ## The steps
 
