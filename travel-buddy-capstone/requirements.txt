@@ -1,0 +1,7 @@
+agent-framework>=0.1.0
+agent-framework-foundry>=0.1.0
+agent-framework-openai>=0.1.0
+azure-identity>=1.19
+python-dotenv>=1.0
+pydantic>=2.7
+requests>=2.31
