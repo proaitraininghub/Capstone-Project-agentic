@@ -5,3 +5,11 @@ __pycache__/
 .env
 traces.jsonl
 memory_store.json
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+traces.jsonl
+memory_store.json
+"@
