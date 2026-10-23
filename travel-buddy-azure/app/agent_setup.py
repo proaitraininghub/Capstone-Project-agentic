@@ -61,6 +61,15 @@ def setup_monitoring(default_service_name):
     if not os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
         return
     os.environ.setdefault("OTEL_SERVICE_NAME", default_service_name)
+
+    # IMPORTANT: stop a logging loop. The Azure Monitor sender writes a log line for every
+    # request it sends. If those lines are INFO level and get captured and sent again, the
+    # worker sends telemetry about its own telemetry, forever. Keep Azure libraries at WARNING.
+    import logging
+    for name in ("azure", "azure.core.pipeline.policies.http_logging_policy",
+                 "azure.monitor.opentelemetry.exporter"):
+        logging.getLogger(name).setLevel(logging.WARNING)
+
     from azure.monitor.opentelemetry import configure_azure_monitor
     from agent_framework.observability import create_resource, enable_instrumentation
 

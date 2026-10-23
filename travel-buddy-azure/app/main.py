@@ -24,7 +24,10 @@ import time
 import uuid
 
 from dotenv import load_dotenv
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import FileResponse
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
 from celery.result import AsyncResult
@@ -45,6 +48,10 @@ ANSWER_CACHE_TTL = int(os.environ.get("ANSWER_CACHE_TTL", "600"))  # seconds. 0 
 # Monitoring (optional): traces of every web request go to Application Insights
 if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     os.environ.setdefault("OTEL_SERVICE_NAME", "travel-buddy-api")
+    import logging
+    for _name in ("azure", "azure.core.pipeline.policies.http_logging_policy",
+                  "azure.monitor.opentelemetry.exporter"):
+        logging.getLogger(_name).setLevel(logging.WARNING)   # avoid a telemetry logging loop
     from azure.monitor.opentelemetry import configure_azure_monitor
     configure_azure_monitor(connection_string=os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"])
 
@@ -125,6 +132,31 @@ async def check_rate_limit(user):
 def answer_cache_key(message):
     normalized = " ".join(message.lower().split())
     return "tb:answer:" + hashlib.sha256(normalized.encode()).hexdigest()
+
+
+# ------------------------------------------------------------------
+# THE CHAT PAGE: a single HTML file served by the API itself.
+# Same address as the API, so the browser needs no CORS settings.
+# ------------------------------------------------------------------
+INDEX_FILE = Path(__file__).parent / "static" / "index.html"
+PAGE_HEADERS = {
+    "Content-Security-Policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Cache-Control": "no-cache",
+}
+
+
+@app.get("/", include_in_schema=False)
+async def chat_page():
+    return FileResponse(INDEX_FILE, media_type="text/html", headers=PAGE_HEADERS)
+
+
+@app.get("/me", include_in_schema=False)
+async def me(request: Request):
+    """Who is signed in? Container Apps sign-in (Easy Auth) adds this header. It is empty
+    when sign-in is switched off. The page uses it to show the name and a Sign out link."""
+    return {"user": request.headers.get("x-ms-client-principal-name")}
 
 
 @app.get("/health")
