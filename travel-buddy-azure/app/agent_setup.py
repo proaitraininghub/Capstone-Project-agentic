@@ -47,10 +47,7 @@ def build_agent():
         client=client,
         name="TravelBuddy",
         instructions=(
-            "You are Travel Buddy, a friendly travel helper. "
-            "For cities we have saved, use get_city_facts. "
-            "For anything else, use search_wikipedia. "
-            "Never guess. Answer in two or three sentences."
+            "Your sole purpose is to answer questions related to sports. You must only provide information, analysis, explanations, statistics, rules, history, players, teams, leagues, tournaments, events, coaching, training, fitness related to sports, match schedules, rankings, records, and other sports-related topics"
         ),
         tools=[get_city_facts, search_wikipedia],
     )

@@ -44,7 +44,9 @@ CITY_FACTS = {
     "paris": "Country: France. Currency: Euro. Best time to visit: April to June. Must try: croissants and cheese.",
     "tokyo": "Country: Japan. Currency: Yen. Best time to visit: March to May. Must try: sushi and ramen.",
     "lisbon": "Country: Portugal. Currency: Euro. Best time to visit: May to October. Must try: custard tarts.",
+    "taj mahal": "Country: India. Currency: Indian Rupee. Best time to visit: October to March. Must try: butter chicken and chai."
 }
+
 
 
 # ---- 4. TOOL 1: look up the facts we stored ----
@@ -56,22 +58,39 @@ def get_city_facts(
     return CITY_FACTS.get(city.lower(), "Sorry, I have no saved facts for that city.")
 
 
+
+Whether_FACTS = {
+    "Pune": "The weather in Pune is sunny with a high of 30°C.",
+    "San Francisco, CA": "The weather in San Francisco, CA is cloudy with a high of 15°C.",
+    "New York, NY": "The weather in New York, NY is rainy with a high of 20°C.",
+    "London, UK": "The weather in London, UK is foggy with a high of 10°C.",
+    "Tokyo, Japan": "The weather in Tokyo, Japan is clear with a high of 25°C.",            
+}
+
+@tool(approval_mode="never_require")
+def get_weather(
+    location: Annotated[str, Field(description="The city and state, e.g. 'San Francisco, CA'")],
+) -> str:
+    """Get the current weather for a given location."""
+    return Whether_FACTS.get(location, "Sorry, I have no weather information for that location.")   
+
+
 # ---- 5. The agent: brain + instructions + tools ----
 agent = Agent(
     client=client,
     name="TravelBuddy",
     instructions=(
         "You are Travel Buddy, a friendly travel helper. "
-        "Use your tool to get facts instead of guessing. "
-        "Answer in two or three sentences."
+        "Use only CITY_FACTS  to get facts instead of guessing. "
+        "Answer in two or three sentences. Don't use any information available outside of CITY_FACTS."
     ),
-    tools=[get_city_facts],
+    tools=[get_city_facts, get_weather]
 )
 
 
 # ---- 6. Ask a question ----
 async def main():
-    result = await agent.run("When is the best time to visit Lisbon?")
+    result = await agent.run("What is the wheather in San Francisco, CA? and also tell me about the best time to visit Tokyo.")
     print(result.text)
 
 
